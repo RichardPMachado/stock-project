@@ -3,5 +3,5 @@ export class User {
   emial: string;
   password: string;
   name: string;
-  tipo: string;
+  tipo: 'admin' | 'user';
 }
