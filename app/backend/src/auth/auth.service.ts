@@ -12,11 +12,11 @@ import { IUserToken } from './models/IUserToken';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly userService: UserService,
   ) {}
 
-  login(user: User): IUserToken {
+  async login(user: User): Promise<IUserToken> {
     const payload: IUserPayload = {
       sub: user.id,
       email: user.email,
@@ -24,10 +24,8 @@ export class AuthService {
       tipo: user.tipo,
     };
 
-    const jwtToken = this.jwtService.sign(payload);
-
     return {
-      access_token: jwtToken,
+      access_token: this.jwtService.sign(payload),
     };
   }
 
@@ -44,6 +42,7 @@ export class AuthService {
         };
       }
     }
+
     throw new UnauthorizedError(
       'Email address or password provided is incorrect.',
     );

@@ -7,6 +7,8 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const PORT = process.env.APP_PORT || 3001;
+  console.log(PORT);
+
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(

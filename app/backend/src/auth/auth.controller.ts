@@ -16,9 +16,9 @@ import { IAuthRequest } from './models/IAuthRequest';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @IsPublic()
+  @UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(LocalAuthGuard)
   login(@Request() req: IAuthRequest) {
     return this.authService.login(req.user);
   }
