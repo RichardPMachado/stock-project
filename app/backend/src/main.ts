@@ -7,6 +7,7 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const PORT = process.env.APP_PORT;
+  // console.log(process.env.JWT_SECRET);
 
   const app = await NestFactory.create(AppModule);
 

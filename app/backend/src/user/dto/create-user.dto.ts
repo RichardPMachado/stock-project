@@ -24,5 +24,5 @@ export class CreateUserDto extends User {
   name: string;
 
   @IsString()
-  tipo: 'admin' | 'user';
+  role: 'admin' | 'user';
 }

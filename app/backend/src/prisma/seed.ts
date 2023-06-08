@@ -5,6 +5,8 @@ import { userSeed } from '../data/userSeed';
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.user.deleteMany();
+
   await prisma.user.createMany({
     data: userSeed,
   });

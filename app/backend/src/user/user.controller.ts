@@ -31,6 +31,7 @@ export class UserController {
 
   @Get(':email')
   findByEmail(@Param('email') email: string) {
+    // console.log('entrei', email);
     return this.userService.findByEmail(email);
   }
 
