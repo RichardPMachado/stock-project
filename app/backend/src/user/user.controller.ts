@@ -7,7 +7,9 @@ import {
   Body,
   // Patch,
   Param,
-  // Delete,
+  Delete,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 
 import { CreateUserDto } from './dto/create-user.dto';
@@ -29,24 +31,30 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get(':email')
-  findByEmail(@Param('email') email: string) {
-    // console.log('entrei', email);
-    return this.userService.findByEmail(email);
+  @Get('id/:id')
+  async findOne(@Param('id') id: string) {
+    return await this.userService.findOne(+id);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.userService.findOne(+id);
-  // }
+  @Get('email/:email')
+  findByEmail(@Param('email') email: string) {
+    return this.userService.findByEmail(email);
+  }
 
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
   //   return this.userService.update(+id, updateUserDto);
   // }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.userService.remove(+id);
-  // }
+  @Delete('id/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeById(@Param('id') id: string) {
+    return this.userService.removeById(+id);
+  }
+
+  @Delete('email/:email')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeByEmail(@Param('email') email: string) {
+    return this.userService.removeByEmail(email);
+  }
 }

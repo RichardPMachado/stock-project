@@ -1,7 +1,8 @@
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { User } from '@prisma/client';
 
 import { CreateUserDto } from './dto/create-user.dto';
 // import { UpdateUserDto } from './dto/update-user.dto';
@@ -24,26 +25,54 @@ export class UserService {
     };
   }
 
-  findAll() {
-    return `This action returns all user`;
+  findAll(): Promise<User[]> {
+    return this.prisma.user.findMany();
   }
 
-  findByOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    const user = await this.prisma.user.findFirst({
+      where: { id },
+    });
+    if (!user) {
+      throw new NotFoundException(`User id: ${id} Not Found`);
+    }
+    return user;
   }
 
-  findByEmail(email: string) {
-    return this.prisma.user.findUnique({
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.prisma.user.findUnique({
       where: { email },
     });
-    // return `This action returns a #${email} user`;
+    if (!user) {
+      throw new NotFoundException(`User email: ${email} Not Found`);
+    }
+    return user;
   }
 
   // update(id: number, updateUserDto: UpdateUserDto) {
   //   return `This action updates a #${id} user`;
   // }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} user`;
-  // }
+  async removeById(id: number): Promise<void> {
+    const user = await this.findOne(id);
+    console.log(user);
+    if (!user) {
+      throw new NotFoundException(`User id: ${id} Not Found`);
+    }
+    await this.prisma.user.delete({
+      where: { id },
+    });
+    // return user;
+  }
+  async removeByEmail(email: string): Promise<void> {
+    const user = await this.findByEmail(email);
+    console.log(user);
+    if (!user) {
+      throw new NotFoundException(`User email: ${email} Not Found`);
+    }
+    await this.prisma.user.delete({
+      where: { email },
+    });
+    // return user;
+  }
 }
