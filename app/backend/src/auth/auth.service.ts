@@ -1,7 +1,7 @@
-import * as bcrypt from 'bcrypt';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 
+import { validateHash } from '@/utils/hash';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
@@ -33,7 +33,10 @@ export class AuthService {
     const user = await this.userService.findByEmail(email);
 
     if (user) {
-      const isPasswordValid = bcrypt.compareSync(password, user.password);
+      const isPasswordValid: boolean = await validateHash(
+        password,
+        user.password,
+      );
 
       if (isPasswordValid) {
         return {
