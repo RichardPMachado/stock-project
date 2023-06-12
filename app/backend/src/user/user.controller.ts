@@ -1,19 +1,21 @@
 import { IsPublic } from 'src/auth/decorators/is-public.decorator';
 
+import { CurrentUser } from '@/auth/decorators/current-user.decorator';
 import {
   Controller,
   Get,
   Post,
   Body,
-  // Patch,
+  Patch,
   Param,
   Delete,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import { User } from '@prisma/client';
 
 import { CreateUserDto } from './dto/create-user.dto';
-// import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -31,9 +33,14 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @Get('me')
+  getMe(@CurrentUser() user: User) {
+    return user;
+  }
+
   @Get('id/:id')
-  async findOne(@Param('id') id: string) {
-    return await this.userService.findOne(+id);
+  findOne(@Param('id') id: string) {
+    return this.userService.findOne(+id);
   }
 
   @Get('email/:email')
@@ -41,10 +48,10 @@ export class UserController {
     return this.userService.findByEmail(email);
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.userService.update(+id, updateUserDto);
-  // }
+  @Patch(':email')
+  update(@Param('email') email: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.userService.update(email, updateUserDto);
+  }
 
   @Delete('id/:id')
   @HttpCode(HttpStatus.NO_CONTENT)

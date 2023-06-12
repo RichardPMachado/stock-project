@@ -1,11 +1,12 @@
-import * as bcrypt from 'bcrypt';
+// import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
 
+import { createHash } from '@/utils/hash';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '@prisma/client';
 
 import { CreateUserDto } from './dto/create-user.dto';
-// import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -14,7 +15,7 @@ export class UserService {
   async create(createUserDto: CreateUserDto) {
     const data = {
       ...createUserDto,
-      password: await bcrypt.hash(createUserDto.password, 10),
+      password: await createHash(createUserDto.password),
     };
 
     const createdUser = await this.prisma.user.create({ data });
@@ -49,13 +50,23 @@ export class UserService {
     return user;
   }
 
-  // update(id: number, updateUserDto: UpdateUserDto) {
-  //   return `This action updates a #${id} user`;
-  // }
+  async update(email: string, updateUserDto: UpdateUserDto) {
+    const oldUser = await this.findByEmail(email);
+
+    const newUser = await this.prisma.user.update({
+      where: { email },
+      data: {
+        ...oldUser,
+        ...updateUserDto,
+      },
+    });
+    console.log(newUser);
+    return newUser;
+  }
 
   async removeById(id: number): Promise<void> {
     const user = await this.findOne(id);
-    console.log(user);
+    // console.log(user);
     if (!user) {
       throw new NotFoundException(`User id: ${id} Not Found`);
     }
